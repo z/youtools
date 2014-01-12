@@ -1,6 +1,7 @@
 #!/bin/bash
 # youtools.sh by -z-
 # ./youtools.sh -y http://www.youtube.com/watch?v=V5bYDhZBFLA 00:17 10 5 160:120
+# ./youtools.sh -y http://www.youtube.com/watch?v=V5bYDhZBFLA 00:42 4 4 320:240 mmm.gif 1
 
 youtube_to_gif() {
 	if [[ "$1" == "" ]]; then echo "video url required"; exit 0; fi
@@ -9,7 +10,7 @@ youtube_to_gif() {
 	duration=${3:-15}
 	framestep=${4:-5}
 	scale=${5:-320:240}
-	youtube-dl $url
+	youtube-dl -o "%(id)s.%(ext)s" $url
 	video=$(ls ${url##*=}* |grep -v gif| tail -n1)
 	gif=${6:-${video%.*}.gif}
 	r=${7:-}
@@ -27,7 +28,7 @@ video_to_gif() {
 	echo mplayer $video -ss $start -endpos $duration -vo png:outdir=temp_$video -vf framestep=${framestep}$scale -nosound
 	mplayer $video -ss $start -endpos $duration -vo png:outdir=temp_$video -vf framestep=${framestep}$scale -nosound
 	cd temp_$video
-	if [[ "$7" != "" ]]; then
+	if [[ "$7" == "1" ]]; then
 		lastfile=$(ls -rtv | head -n1)
 		count=${lastfile##*0}
 		i=${count%%.png}
